@@ -1,0 +1,18 @@
+{
+    "manifest_version": 3,
+    "name": "Edge壁纸替换插件",
+    "version": "1.0",
+    "description": "将视频元素替换为图片元素",
+    "content_scripts": [
+    {
+        "matches": ["<all_urls>"],
+        "js": ["content.js"],
+        "run_at": "document_end"
+    }
+    ],
+    "permissions": ["tabs", "scripting"],
+    "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'",
+    "content_scripts": "script-src 'self' 'unsafe-inline'; object-src 'self'"
+    }
+}

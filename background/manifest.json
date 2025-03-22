@@ -1,0 +1,13 @@
+{
+    "manifest_version": 2,
+    "name": "Edge壁纸替换插件",
+    "version": "1.0",
+    "description": "将视频元素替换为图片元素",
+    "icons": {
+      "128": "icon.png"
+    },
+    "permissions": ["activeTab"],
+    "browser_action": {
+        "default_popup": "buttom.html"
+    }
+  }
