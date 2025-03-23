@@ -10,6 +10,21 @@
   <input type="text" id="bgUrlInput">
   <button id="saveBg">保存背景设置</button>
 
-  <script src="options.js"></script>
+  <script>
+    // 加载当前保存的背景URL
+    chrome.storage.local.get(['backgroundUrl'], (result) => {
+      document.getElementById('bgUrlInput').value = result.backgroundUrl || '';
+    });
+
+    // 保存新的背景URL
+    document.getElementById('saveBg').addEventListener('click', () => {
+      const url = document.getElementById('bgUrlInput').value;
+      if (url) {
+        chrome.storage.local.set({ backgroundUrl: url }, () => {
+          alert('背景设置已保存！');
+        });
+      }
+    });
+  </script>
 </body>
 </html>
