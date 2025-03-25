@@ -2,34 +2,159 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>自定义背景图片</title>
+  <title>宇涵桌面</title>
   <style>
     body {
-      width: 200px;
-      padding: 10px;
       font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8e8f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh; /* 让 body 高度占满整个视口 */
+      width: 100vw; /* 让 body 宽度占满整个视口 */
     }
-    input {
+    .header {
+      background-color: #fff;
+      padding: 10px 20px;
       width: 100%;
-      padding: 5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
-    button {
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #ff69b4;
+    }
+    .header nav {
+      display: flex;
+      gap: 10px;
+    }
+    .header nav a {
+      text-decoration: none;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 5px;
+      background-color: #ffda79;
+      transition: background-color 0.3s;
+    }
+    .header nav a:hover {
+      background-color: #ffb347;
+    }
+    .categories {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .categories a {
+      text-decoration: none;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 5px;
+      background-color: #ffd700;
+      transition: background-color 0.3s;
+    }
+    .categories a:hover {
+      background-color: #ffbf00;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 20px;
+      width: 80%;
+    }
+    .gallery img {
       width: 100%;
-      padding: 5px;
-      margin-top: 10px;
-      background-color: #0078d4;
-      color: white;
-      border: none;
+      height: 110px; /* 调整图片高度 */
+      object-fit: cover; /* 确保图片覆盖整个容器，同时保持宽高比 */
+      border-radius: 10px;
       cursor: pointer;
+    }
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 600px; /* 限制最大宽度 */
+      padding: 20px;
+    }
+    .controls input, .controls button, .controls a {
+      flex: 1;
+      margin-right: 10px; /* 为元素之间添加间隔 */
+    }
+    .controls a {
+      text-align: center;
+    }
+    .controls a:last-child {
+      margin-right: 0; /* 移除最后一个元素的右边距 */
+    }
+    .more-button {
+      display: block;
+      padding: 10px;
+      text-align: center;
+      background-color: #ffd700;
+      color: #333;
+      text-decoration: none;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+    }
+    .more-button:hover {
+      background-color: #ffbf00;
     }
   </style>
 </head>
 <body>
-  <h3>背景图片</h3>
+<div class="header">
+  <h1>宇涵<i>💖</i>桌面</h1>
+  <nav>
+    <a href="#">首页</a>
+    <a href="#">功能</a>
+    <a href="#">下载电脑版</a>
+    <a href="#">微软商店版</a>
+    <a href="#">微软商店版</a>
+    <a href="#">微软商店版</a>
+  </nav>
+</div>
+<div class="categories">
+  <a href="#">精选</a>
+  <a href="#">风景</a>
+  <a href="#">动漫</a>
+  <a href="#">美女</a>
+  <a href="#">科幻</a>
+  <a href="#">游戏</a>
+  <a href="#">汽车</a>
+  <a href="#">体育</a>
+</div>
+<div class="gallery">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005FzdTdgy1gegf7md2yyj31hc0u0e6v.jpg" alt="Image 1">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqi5vxrij31630rsu0x.jpg" alt="Image 2">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqmpz6zpj312z0svu0x.jpg" alt="Image 3">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqnrlkfxj31110q77sr.jpg" alt="Image 4">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo0e8fzj31hc0xcqv5.jpg" alt="Image 5">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo9z8j0j31kw11ee81.jpg" alt="Image 6">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqoy2b7hj31040p7npd.jpg" alt="Image 7">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqp7hu7tj31kw0ydx6r.jpg" alt="Image 8">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foenqvqwvqj31hc0xc7aj.jpg" alt="Image 9">
+</div>
+<div class="controls">
   <input type="text" id="bgUrl" placeholder="输入背景图片URL">
   <button id="changeBg">更换背景</button>
-
+  <a href="#" class="more-button">更多超清壁纸</a>
   <script src="popup.js"></script>
-
+</div>
+<script>
+  window.onload = function () {
+    chrome.windows.getCurrent(function (win) {
+      chrome.windows.update(win.id, {
+        width: screen.availWidth,
+        height: screen.availHeight
+      });
+    });
+  };
+</script>
 </body>
 </html>
