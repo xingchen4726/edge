@@ -1,17 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>智能背景色调节器</title>
   <style>
-    button {
-      padding: 10px;
-      margin: 10px;
+    :root {
+      --primary: #FF6B6B;
+      --secondary: #4ECDC4;
+      --background: #f8f9ff;
+      --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--background);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      transition: background-color 0.5s ease;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    #changeColor {
+      padding: 1.2rem 2.8rem;
+      background: linear-gradient(135deg, var(--primary), #FF8E53);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
       cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      box-shadow: var(--shadow);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    #changeColor::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(
+        120deg,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+      );
+      transition: 0.5s;
+    }
+
+    #changeColor:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+      filter: brightness(1.1);
+    }
+
+    #changeColor:active {
+      transform: translateY(0);
+      filter: brightness(0.9);
+    }
+
+    #changeColor:hover::before {
+      left: 100%;
+    }
+
+    #changeColor svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+      transition: transform 0.3s ease;
+    }
+
+    #changeColor:hover svg {
+      transform: rotate(180deg);
+    }
+
+    .color-info {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 0.8rem 1.5rem;
+      border-radius: 25px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+
+    @keyframes ripple {
+      to {
+        transform: scale(2);
+        opacity: 0;
+      }
+    }
+
+    @media (max-width: 480px) {
+      #changeColor {
+        width: 80%;
+        justify-content: center;
+        padding: 1rem 2rem;
+      }
     }
   </style>
 </head>
 <body>
-  <button id="changeColor">Change Background Color</button>
+  <div class="container">
+    <button id="changeColor">
+      <svg viewBox="0 0 24 24">
+        <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5-2.5-1.12-2.5-2.5zM12 15H7c-1.1 0-2-.9-2-2s.9-2 2-2h5c1.1 0 2 .9 2 2s-.9 2-2 2z"/>
+      </svg>
+      更换背景色
+    </button>
+    <div class="color-info" id="colorInfo"></div>
+  </div>
+
   <script src="popup.js"></script>
-</body>
-</html>
+  <script>
+    // 添加颜色信息提示
+    const colorInfo = document.getElementById('colorInfo');
+    
+    // 示例交互逻辑（需与popup.js实际功能配合）
+    document.getElementById('changeColor').addEventListener('click', function() {
+      // 显示颜色信息
+      const currentColor = getComputedStyle(document.body).backgroundColor;
+      colorInfo.textContent = `当前背景色: ${currentColor}`;
+      colorInfo.style.opacity = '1';
+      
+      // 3秒后淡出
+      setTimeout(() => {
+        colorInfo.style.opacity = '0';
+      }, 2000);
+
+      // 添加涟漪效果
+      const ripple = document.createElement('div');
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background:
