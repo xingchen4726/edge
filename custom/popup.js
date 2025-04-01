@@ -88,3 +88,52 @@ document.getElementById('replaceAll').addEventListener('click', async () => {
     button.disabled = false;
   }
 });
+document.getElementById('generateAIImage').addEventListener('click', async () => {
+  const prompt = document.getElementById('aiPrompt').value.trim();
+  if (!prompt) {
+    alert('请输入AI绘图描述！');
+    return;
+  }
+
+  const button = document.getElementById('generateAIImage');
+  const originalText = button.textContent;
+  button.textContent = '生成中...';
+  button.disabled = true;
+
+  try {
+    const response = await fetch('https://api.siliconflow.cn/v1/images/generations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer sk-zjnqimadckntkhndvxdoqijbseslfkszxaannqpbmbstsnxz' // 替换为你的API密钥
+      },
+      body: JSON.stringify({
+        model: 'Kwai-Kolors/Kolors',
+        prompt: prompt,
+        n: 1,
+        size: '1024x1024'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('AI绘图API请求失败');
+    }
+
+    const data = await response.json();
+    const imageUrl = data.data[0].url;
+
+    // 将生成的图像URL存储到本地存储
+    chrome.storage.local.set({ backgroundUrl: imageUrl }, () => {
+      alert('AI背景已生成并应用！');
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, { action: "updateBackground" });
+      });
+    });
+  } catch (error) {
+    console.error('生成AI背景失败:', error);
+    alert('生成AI背景失败，请稍后重试');
+  } finally {
+    button.textContent = originalText;
+    button.disabled = false;
+  }
+});
