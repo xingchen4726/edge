@@ -23,6 +23,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      height: 100vh; /* 让 body 高度占满整个视口 */
+      width: 100vw; /* 让 body 宽度占满整个视口 */
     }
 
     .header {
@@ -104,18 +106,18 @@
 
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      padding: 0 5%;
-      width: 90%;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 20px;
+      width: 80%;
       margin-bottom: 40px;
     }
 
     .gallery img {
       width: 100%;
-      height: 180px;
+      height: 110px;
       object-fit: cover;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
       border: 2px solid transparent;
@@ -221,7 +223,6 @@
   <nav>
     <a href="#">首页</a>
     <a href="#">功能</a>
-    <a href="#">下载电脑版</a>
     <a href="#">微软商店版</a>
   </nav>
 </div>
@@ -236,13 +237,31 @@
   <a href="#">体育</a>
 </div>
 <div class="gallery">
-  <!-- 图片保持原有数量，此处省略以节省空间 -->
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005FzdTdgy1gegf7md2yyj31hc0u0e6v.jpg" alt="Image 1">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqi5vxrij31630rsu0x.jpg" alt="Image 2">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqmpz6zpj312z0svu0x.jpg" alt="Image 3">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqnrlkfxj31110q77sr.jpg" alt="Image 4">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo0e8fzj31hc0xcqv5.jpg" alt="Image 5">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo9z8j0j31kw11ee81.jpg" alt="Image 6">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqoy2b7hj31040p7npd.jpg" alt="Image 7">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqp7hu7tj31kw0ydx6r.jpg" alt="Image 8">
+  <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foenqvqwvqj31hc0xc7aj.jpg" alt="Image 9">
 </div>
 <div class="controls">
   <input type="text" id="bgUrl" placeholder="输入背景图片URL">
   <button id="changeBg">更换背景</button>
+  <button id="replaceAll">一键替换所有图片</button>
   <a href="#" class="more-button">更多超清壁纸</a>
 </div>
+
+<!-- 
+  一键替换功能预设图片URL
+  请将下面的URL替换为您想要设置的图片地址
+  示例格式：https://example.com/path/to/your/image.jpg
+-->
+<script>
+  const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg"; // 请在此处填写替换图片URL
+</script>
 <script src="popup.js"></script>
 <script>
   window.onload = function () {
