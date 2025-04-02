@@ -55,6 +55,21 @@ function updateBackgroundImages(urls) {
   }
 }
 
+// 设置图片点击事件处理程序
+function setupImageClickHandlers() {
+  const images = document.querySelectorAll('.gallery img');
+  images.forEach(img => {
+    img.addEventListener('click', () => {
+      chrome.storage.local.set({ backgroundUrl: img.src }, () => {
+        alert('背景已更新！');
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, { action: "updateBackground" });
+        });
+      });
+    });
+  });
+}
+
 // 本地备用图片URL
 const LOCAL_IMAGE_URLS = [
   "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/a15b4afegy1fmvjaxjsaoj21hc0u0e65.jpg",
@@ -67,6 +82,9 @@ const LOCAL_IMAGE_URLS = [
   "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foxlol5zqjj310p1hc7se.jpg",
   "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foxlofvhqoj31hc0u0qhu.jpg"
 ];
+
+// 初始化图片点击事件
+document.addEventListener('DOMContentLoaded', setupImageClickHandlers);
 
 // 一键替换所有图片功能
 document.getElementById('replaceAll').addEventListener('click', async () => {
