@@ -22,10 +22,27 @@ document.getElementById('changeBg').addEventListener('click', () => {
  *    - src=moehu_pic: 数据表名
  * 3. 返回图片URL数组
  */
+// 获取数据库总页数
+async function getTotalPages() {
+  try {
+    const response = await fetch('http://localhost:8080/images/info?src=moehu_pic');
+    if (!response.ok) throw new Error('获取页数失败');
+    const data = await response.json();
+    return data.totalPages || 10; // 默认10页
+  } catch (error) {
+    console.error('获取总页数失败:', error);
+    return 10; // 默认10页
+  }
+}
+
 async function fetchImageUrlsFromDB() {
   try {
+    // 获取随机页码
+    const totalPages = await getTotalPages();
+    const randomPage = Math.floor(Math.random() * totalPages) + 1;
+    
     // 调用本地API接口获取图片数据
-    const response = await fetch('http://localhost:8080/images?type=img1&page=1&size=9&src=moehu_pic');
+    const response = await fetch(`http://localhost:8080/images?type=img1&page=${randomPage}&size=9&src=moehu_pic`);
     if (!response.ok) throw new Error('获取图片数据失败');
     
     // 解析返回的JSON数据
