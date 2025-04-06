@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>宇涵桌面 - 个性化壁纸管理</title>
+  <title>自定义桌面 - 个性化壁纸管理</title>
   <style>
     :root {
       --primary: #FF3B8B;
@@ -23,6 +23,8 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      height: 100vh;
+      width: 100vw;
     }
 
     .header {
@@ -75,47 +77,133 @@
       background: linear-gradient(145deg, #ffe5ed, #fff0f5);
     }
 
-    .categories {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
-      margin: 100px 0 30px;
-      padding: 0 5%;
+    #ai-page .controls {
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 30px;
+}
+
+.ai-control-group {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* 按钮通用样式增强 */
+#ai-page button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  padding: 14px 24px;
+}
+
+/* 按钮悬浮效果 */
+#ai-page button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255,59,139,0.3);
+}
+
+/* 按钮点击效果 */
+#ai-page button:active {
+  transform: translateY(1px);
+}
+
+/* 各按钮个性样式 */
+#changeBg {
+  background: linear-gradient(135deg, #FF3B8B 0%, #FF6B6B 100%);
+  color: white;
+}
+
+#generateAIImage {
+  background: linear-gradient(135deg, #6B66FF 0%, #8B65FF 100%);
+  color: white;
+}
+
+#replaceAll {
+  background: linear-gradient(135deg, #FFD700 0%, #FFAA00 100%);
+  color: var(--text);
+}
+
+.more-button {
+  background: linear-gradient(135deg, #00C9A7 0%, #00D4B1 100%);
+  color: white;
+}
+
+/* 按钮图标 */
+.button-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+#replaceAll .button-icon {
+  filter: none;
+}
+
+/* 流光动画效果 */
+button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255,255,255,0.2) 50%,
+    transparent 75%
+  );
+  animation: flow 3s infinite linear;
+  opacity: 0.6;
+}
+
+@keyframes flow {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  #ai-page .controls {
+    padding: 20px;
+  }
+  
+  #ai-page button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+    .page {
+      display: none;
       width: 90%;
+      margin-top: 100px;
     }
-
-    .categories a {
-      text-decoration: none;
-      color: var(--text);
-      padding: 8px 20px;
-      border-radius: 20px;
-      background: var(--card-bg);
-      transition: all 0.3s ease;
-      border: 1px solid rgba(255,59,139,0.1);
-      font-size: 0.95rem;
-    }
-
-    .categories a:hover {
-      background: var(--primary);
-      color: white;
-      transform: scale(1.05);
+    .page.active {
+      display: block;
     }
 
     .gallery {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
-      padding: 0 5%;
-      width: 90%;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 20px;
+      width: 100%;
       margin-bottom: 40px;
     }
 
     .gallery img {
       width: 100%;
-      height: 180px;
+      height: 110px;
       object-fit: cover;
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.3s ease;
       border: 2px solid transparent;
@@ -131,8 +219,7 @@
       display: grid;
       grid-template-columns: 1fr auto auto;
       gap: 15px;
-      width: 90%;
-      max-width: 1000px;
+      width: 100%;
       padding: 20px;
       margin-bottom: 40px;
       background: var(--card-bg);
@@ -187,6 +274,23 @@
       transform: translateY(-2px);
     }
 
+    .context-menu {
+      position: absolute;
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      padding: 8px 0;
+      z-index: 1001;
+    }
+    .context-menu-item {
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .context-menu-item:hover {
+      background: rgba(255,59,139,0.1);
+    }
+
     @media (max-width: 768px) {
       .header {
         flex-direction: column;
@@ -217,34 +321,151 @@
 </head>
 <body>
 <div class="header">
-  <h1>宇涵<i>💖</i>桌面</h1>
+  <h1>自定义<i>💖</i>桌面</h1>
   <nav>
-    <a href="#">首页</a>
-    <a href="#">功能</a>
-    <a href="#">下载电脑版</a>
-    <a href="#">微软商店版</a>
+    <a href="#" onclick="showPage('home')">首页</a>
+    <a href="#" onclick="showPage('favorites')">收藏</a>
+    <a href="#" onclick="showPage('ai')">AI</a>
+    <a href="#" onclick="showPage('history')">历史</a>
   </nav>
 </div>
-<div class="categories">
-  <a href="#">精选</a>
-  <a href="#">风景</a>
-  <a href="#">动漫</a>
-  <a href="#">美女</a>
-  <a href="#">科幻</a>
-  <a href="#">游戏</a>
-  <a href="#">汽车</a>
-  <a href="#">体育</a>
+
+<!-- 首页 -->
+<div id="home-page" class="page active">
+  <div class="gallery">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005FzdTdgy1gegf7md2yyj31hc0u0e6v.jpg" alt="Image 1">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqi5vxrij31630rsu0x.jpg" alt="Image 2">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqmpz6zpj312z0svu0x.jpg" alt="Image 3">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqnrlkfxj31110q77sr.jpg" alt="Image 4">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo0e8fzj31hc0xcqv5.jpg" alt="Image 5">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo9z8j0j31kw11ee81.jpg" alt="Image 6">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqoy2b7hj31040p7npd.jpg" alt="Image 7">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqp7hu7tj31kw0ydx6r.jpg" alt="Image 8">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foenqvqwvqj31hc0xc7aj.jpg" alt="Image 9">
+  </div>
 </div>
-<div class="gallery">
-  <!-- 图片保持原有数量，此处省略以节省空间 -->
+
+<!-- 收藏页面 -->
+<div id="favorites-page" class="page">
+  <div class="gallery" id="favorites-gallery"></div>
 </div>
-<div class="controls">
-  <input type="text" id="bgUrl" placeholder="输入背景图片URL">
-  <button id="changeBg">更换背景</button>
-  <a href="#" class="more-button">更多超清壁纸</a>
+
+<!-- AI功能页面 -->
+<!-- 修改AI页面部分 -->
+<div id="ai-page" class="page">
+  <div class="controls">
+    <div class="ai-control-group">
+      <input type="text" id="bgUrl" placeholder="🌐 输入背景图片URL">
+      <button id="changeBg">
+        <img src="https://img.icons8.com/ios/50/ffffff/refresh--v1.png" class="button-icon" alt="更换">
+        更换背景
+      </button>
+    </div>
+
+    <div class="ai-control-group">
+      <input type="text" id="aiPrompt" placeholder="🎨 输入AI绘图描述">
+      <button id="generateAIImage">
+        <img src="https://img.icons8.com/ios/50/ffffff/artificial-intelligence.png" class="button-icon" alt="AI">
+        生成AI背景
+      </button>
+    </div>
+
+    <div class="ai-control-group">
+      <button id="replaceAll">
+        <img src="https://img.icons8.com/ios/50/4a4a4a/replace.png" class="button-icon" alt="替换">
+        一键替换所有图片
+      </button>
+      <a href="#" class="more-button">
+        <img src="https://img.icons8.com/ios/50/ffffff/download-from-cloud.png" class="button-icon" alt="更多">
+        更多超清壁纸
+      </a>
+    </div>
+  </div>
 </div>
-<script src="popup.js"></script>
+
+<!-- 历史页面 -->
+<div id="history-page" class="page">
+  <div class="gallery" id="history-gallery"></div>
+</div>
+
 <script>
+  // 页面切换功能
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
+    });
+    document.getElementById(`${pageId}-page`).classList.add('active');
+    
+    if(pageId === 'favorites') loadFavorites();
+    if(pageId === 'history') loadHistory();
+  }
+
+  // 收藏功能
+  let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  let contextMenu = null;
+
+  // 右键菜单
+  document.addEventListener('contextmenu', e => {
+    if(e.target.tagName === 'IMG') {
+      e.preventDefault();
+      showContextMenu(e, e.target.src);
+    }
+  });
+
+  function showContextMenu(e, imgSrc) {
+    if(contextMenu) contextMenu.remove();
+    
+    contextMenu = document.createElement('div');
+    contextMenu.className = 'context-menu';
+    contextMenu.style.left = `${e.pageX}px`;
+    contextMenu.style.top = `${e.pageY}px`;
+    
+    const menuItem = document.createElement('div');
+    menuItem.className = 'context-menu-item';
+    menuItem.textContent = favorites.includes(imgSrc) ? '取消收藏' : '收藏图片';
+    menuItem.onclick = () => toggleFavorite(imgSrc);
+    
+    contextMenu.appendChild(menuItem);
+    document.body.appendChild(contextMenu);
+  }
+
+  document.addEventListener('click', () => {
+    if(contextMenu) {
+      contextMenu.remove();
+      contextMenu = null;
+    }
+  });
+
+  function toggleFavorite(imgSrc) {
+    const index = favorites.indexOf(imgSrc);
+    if(index === -1) {
+      favorites.push(imgSrc);
+    } else {
+      favorites.splice(index, 1);
+    }
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    if(document.getElementById('favorites-page').classList.contains('active')) {
+      loadFavorites();
+    }
+  }
+
+  function loadFavorites() {
+    const container = document.getElementById('favorites-gallery');
+    container.innerHTML = favorites.map(url => `
+      <img src="${url}" alt="收藏的图片">
+    `).join('');
+  }
+
+  // 历史记录功能
+  let history = JSON.parse(localStorage.getItem('history') || '[]');
+  function loadHistory() {
+    const container = document.getElementById('history-gallery');
+    container.innerHTML = history.map(url => `
+      <img src="${url}" alt="历史图片">
+    `).join('');
+  }
+
+  // 初始化页面
   window.onload = function () {
     chrome.windows.getCurrent(function (win) {
       chrome.windows.update(win.id, {
@@ -253,6 +474,10 @@
       });
     });
   };
+
+  // 预设替换功能
+  const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg";
 </script>
+<script src="popup.js"></script>
 </body>
 </html>
