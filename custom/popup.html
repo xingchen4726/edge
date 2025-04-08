@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -5,32 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>自定义桌面 - 个性化壁纸管理</title>
   <style>
-
-#background-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-    }
-
-    .bg-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      background-position: center;
-      opacity: 0;
-      transition: opacity 2s ease-in-out;
-    }
-
-    .bg-layer.active {
-      opacity: 1;
-    }
-
     :root {
       --primary: #FF3B8B;
       --secondary: #FFD700;
@@ -44,13 +19,14 @@
       font-family: 'Microsoft YaHei', Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: transparent;  /* 改为透明 */
+      background: var(--background);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       height: 100vh;
       width: 100vw;
+
     }
 
     .header {
@@ -103,138 +79,111 @@
       background: linear-gradient(145deg, #ffe5ed, #fff0f5);
     }
 
-    .image-container {
-      position: relative;
-      display: block;
-      width: 100%;
-      height: 100%;
-    }
-
-    .favorite-star {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      z-index: 3;
-      pointer-events: auto;
-    }
-
-    .favorite-star::before {
-      content: "★";
-      font-size: 24px;
-      color: white;
-      text-shadow: 0 0 3px rgba(0,0,0,0.5);
-      transition: all 0.3s ease;
-    }
-
-    .favorite-star.active::before {
-      color: #FFD700;
-      text-shadow: 0 0 8px rgba(255,215,0,0.8);
-    }
-
     #ai-page .controls {
-      grid-template-columns: 1fr;
-      gap: 20px;
-      padding: 30px;
-    }
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 30px;
+}
 
-    .ai-control-group {
-      display: grid;
-      gap: 15px;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+.ai-control-group {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
 
-    #ai-page button {
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-weight: 600;
-      padding: 14px 24px;
-    }
+/* 按钮通用样式增强 */
+#ai-page button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  padding: 14px 24px;
+}
 
-    #ai-page button:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(255,59,139,0.3);
-    }
+/* 按钮悬浮效果 */
+#ai-page button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255,59,139,0.3);
+}
 
-    #ai-page button:active {
-      transform: translateY(1px);
-    }
+/* 按钮点击效果 */
+#ai-page button:active {
+  transform: translateY(1px);
+}
 
-    #changeBg {
-      background: linear-gradient(135deg, #FF3B8B 0%, #FF6B6B 100%);
-      color: white;
-    }
+/* 各按钮个性样式 */
+#changeBg {
+  background: linear-gradient(135deg, #FF3B8B 0%, #FF6B6B 100%);
+  color: white;
+}
 
-    #generateAIImage {
-      background: linear-gradient(135deg, #6B66FF 0%, #8B65FF 100%);
-      color: white;
-    }
+#generateAIImage {
+  background: linear-gradient(135deg, #6B66FF 0%, #8B65FF 100%);
+  color: white;
+}
 
-    #replaceAll {
-      background: linear-gradient(135deg, #FFD700 0%, #FFAA00 100%);
-      color: var(--text);
-    }
+#replaceAll {
+  background: linear-gradient(135deg, #FFD700 0%, #FFAA00 100%);
+  color: var(--text);
+}
 
-    .more-button {
-      background: linear-gradient(135deg, #00C9A7 0%, #00D4B1 100%);
-      color: white;
-    }
+.more-button {
+  background: linear-gradient(135deg, #00C9A7 0%, #00D4B1 100%);
+  color: white;
+}
 
-    .button-icon {
-      width: 20px;
-      height: 20px;
-      filter: brightness(0) invert(1);
-    }
+/* 按钮图标 */
+.button-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
 
-    #replaceAll .button-icon {
-      filter: none;
-    }
+#replaceAll .button-icon {
+  filter: none;
+}
 
-    button::after {
-      content: '';
-      position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: linear-gradient(
-        45deg,
-        transparent 25%,
-        rgba(255,255,255,0.2) 50%,
-        transparent 75%
-      );
-      animation: flow 3s infinite linear;
-      opacity: 0.6;
-    }
+/* 流光动画效果 */
+button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255,255,255,0.2) 50%,
+    transparent 75%
+  );
+  animation: flow 3s infinite linear;
+  opacity: 0.6;
+}
 
-    @keyframes flow {
-      0% { transform: translate(-50%, -50%) rotate(0deg); }
-      100% { transform: translate(-50%, -50%) rotate(360deg); }
-    }
+@keyframes flow {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
 
-    @media (max-width: 768px) {
-      #ai-page .controls {
-        padding: 20px;
-      }
-      
-      #ai-page button {
-        width: 100%;
-        justify-content: center;
-      }
-    }
+/* 移动端优化 */
+@media (max-width: 768px) {
+  #ai-page .controls {
+    padding: 20px;
+  }
+  
+  #ai-page button {
+    width: 100%;
+    justify-content: center;
+  }
+}
 
     .page {
-      background: var(--card-bg);  /* 添加内容背景 */
       display: none;
       width: 90%;
       margin-top: 100px;
@@ -249,6 +198,7 @@
       gap: 10px;
       padding: 20px;
       width: 100%;
+
       margin-bottom: 40px;
     }
 
@@ -373,12 +323,6 @@
   </style>
 </head>
 <body>
-
-  <div id="background-container">
-    <div class="bg-layer"></div>
-    <div class="bg-layer"></div>
-  </div>
-
 <div class="header">
   <h1>自定义<i>💖</i>桌面</h1>
   <nav>
@@ -392,42 +336,15 @@
 <!-- 首页 -->
 <div id="home-page" class="page active">
   <div class="gallery">
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005FzdTdgy1gegf7md2yyj31hc0u0e6v.jpg" alt="Image 1">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqi5vxrij31630rsu0x.jpg" alt="Image 2">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqmpz6zpj312z0svu0x.jpg" alt="Image 3">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqnrlkfxj31110q77sr.jpg" alt="Image 4">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo0e8fzj31hc0xcqv5.jpg" alt="Image 5">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo9z8j0j31kw11ee81.jpg" alt="Image 6">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqoy2b7hj31040p7npd.jpg" alt="Image 7">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqp7hu7tj31kw0ydx6r.jpg" alt="Image 8">
-      <button class="favorite-star"></button>
-    </div>
-    <div class="image-container">
-      <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foenqvqwvqj31hc0xc7aj.jpg" alt="Image 9">
-      <button class="favorite-star"></button>
-    </div>
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005FzdTdgy1gegf7md2yyj31hc0u0e6v.jpg" alt="Image 1">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqi5vxrij31630rsu0x.jpg" alt="Image 2">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqmpz6zpj312z0svu0x.jpg" alt="Image 3">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqnrlkfxj31110q77sr.jpg" alt="Image 4">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo0e8fzj31hc0xcqv5.jpg" alt="Image 5">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo9z8j0j31kw11ee81.jpg" alt="Image 6">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqoy2b7hj31040p7npd.jpg" alt="Image 7">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqp7hu7tj31kw0ydx6r.jpg" alt="Image 8">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foenqvqwvqj31hc0xc7aj.jpg" alt="Image 9">
   </div>
 </div>
 
@@ -437,6 +354,7 @@
 </div>
 
 <!-- AI功能页面 -->
+<!-- 修改AI页面部分 -->
 <div id="ai-page" class="page">
   <div class="controls">
     <div class="ai-control-group">
@@ -476,6 +394,7 @@
     <button id="nextPage">下一页</button>
   </div>
 </div>
+
 
 <script src="popup.js"></script>
 </body>

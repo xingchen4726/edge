@@ -1,3 +1,4 @@
+
 chrome.runtime.onInstalled.addListener(() => {
   console.log('自定义背景插件已安装！');
   

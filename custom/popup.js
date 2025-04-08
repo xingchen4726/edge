@@ -1,3 +1,4 @@
+
 let currentPage = 1; // 当前页码
 const pageSize = 9; // 每页显示的图片数量
 // 背景更换功能
@@ -166,7 +167,6 @@ document.getElementById('replaceAll').addEventListener('click', async () => {
     button.disabled = false;
   }
 });
-
 document.getElementById('generateAIImage').addEventListener('click', async () => {
   const prompt = document.getElementById('aiPrompt').value.trim();
   if (!prompt) {

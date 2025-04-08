@@ -1,3 +1,4 @@
+
 chrome.storage.local.get(['backgroundUrl'], (result) => {
   if (result.backgroundUrl) {
     setFixedBackground(result.backgroundUrl);
