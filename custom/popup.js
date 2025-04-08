@@ -1,16 +1,32 @@
+let currentPage = 1; // 当前页码
+const pageSize = 9; // 每页显示的图片数量
 // 背景更换功能
-document.getElementById('changeBg').addEventListener('click', () => {
-  const url = document.getElementById('bgUrl').value;
-  if (url) {
-    chrome.storage.local.set({ backgroundUrl: url }, () => {
-      alert('背景已更新！');
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        chrome.tabs.sendMessage(tabs[0].id, { action: "updateBackground" });
-      });
-    });
+document.getElementById('changeBg').addEventListener('click', async () => {
+  const url = document.getElementById('bgUrl').value.trim();
+  if (!url) {
+    alert('请输入背景图片URL！');
+    return;
   }
-});
 
+  chrome.storage.local.set({ backgroundUrl: url }, async () => {
+    alert('背景已更新！');
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(tabs[0].id, { action: "updateBackground" });
+    });
+
+    // 添加到历史记录
+    try {
+      await fetch('http://localhost:8080/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ src: url })
+      });
+      console.log('输入的背景图已添加到历史记录');
+    } catch (error) {
+      console.error('添加到历史记录失败:', error);
+    }
+  });
+});
 /**
  * 从数据库获取图片URL
  * 调用流程：
@@ -186,11 +202,23 @@ document.getElementById('generateAIImage').addEventListener('click', async () =>
     const imageUrl = data.data[0].url;
 
     // 将生成的图像URL存储到本地存储
-    chrome.storage.local.set({ backgroundUrl: imageUrl }, () => {
+    chrome.storage.local.set({ backgroundUrl: imageUrl }, async () => {
       alert('AI背景已生成并应用！');
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, { action: "updateBackground" });
       });
+
+      // 添加到历史记录
+      try {
+        await fetch('http://localhost:8080/api/history', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ src: imageUrl })
+        });
+        console.log('AI生成的背景图已添加到历史记录');
+      } catch (error) {
+        console.error('添加到历史记录失败:', error);
+      }
     });
   } catch (error) {
     console.error('生成AI背景失败:', error);
@@ -200,194 +228,150 @@ document.getElementById('generateAIImage').addEventListener('click', async () =>
     button.disabled = false;
   }
 });
+document.addEventListener('click', async function (e) {
+  if (e.target.tagName === 'IMG') {
+    const src = e.target.src;
 
-// 页面切换功能
-function showPage(pageId) {
+    try {
+      await fetch('http://localhost:8080/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ src })
+      });
+    } catch (error) {
+      console.error('Error adding history:', error);
+    }
+  }
+
+  if(contextMenu) {
+    contextMenu.remove();
+    contextMenu = null;
+  }
+});
+ // 历史记录功能
+ let history = JSON.parse(localStorage.getItem('history') || '[]');
+ async function loadHistory(page = 1) {
+  try {
+    const response = await fetch(`http://localhost:8080/api/history?page=${page}&size=${pageSize}`);
+    const result = await response.json();
+
+    console.log('API 返回的数据:', result); // 调试日志
+
+    const historyData = result.data || [];
+    const total = result.total || 0;
+    const totalPages = Math.ceil(total / pageSize);
+
+    const container = document.getElementById('history-gallery');
+    container.innerHTML = historyData.map(item => `
+      <img src="${item.src}" alt="历史图片">
+    `).join('');
+
+    // 更新分页按钮状态
+    const prevButton = document.getElementById('prevPage');
+    const nextButton = document.getElementById('nextPage');
+    prevButton.disabled = page <= 1;
+    nextButton.disabled = page >= totalPages;
+
+    // 更新当前页码
+    currentPage = page;
+
+    // 为历史图片绑定点击事件
+    const images = container.querySelectorAll('img');
+    images.forEach(img => {
+      img.addEventListener('click', () => {
+        const url = img.src;
+        chrome.storage.local.set({ backgroundUrl: url }, () => {
+          alert('背景已更新！');
+          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            chrome.tabs.sendMessage(tabs[0].id, { action: "updateBackground" });
+          });
+        });
+      });
+    });
+  } catch (error) {
+    console.error('Error loading history:', error);
+  }
+}
+ // 页面切换功能
+ function showPage(pageId) {
   document.querySelectorAll('.page').forEach(page => {
     page.classList.remove('active');
   });
   document.getElementById(`${pageId}-page`).classList.add('active');
-  
-  if(pageId === 'favorites') loadFavorites();
-  if(pageId === 'history') loadHistory();
+
+  if (pageId === 'favorites') loadFavorites();
+  if (pageId === 'history') loadHistory(1); // 切换到历史页面时加载第一页
 }
+  // 收藏功能
+  let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  let contextMenu = null;
 
- // 修改后的收藏功能
-let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  // 右键菜单
+  document.addEventListener('contextmenu', e => {
+    if(e.target.tagName === 'IMG') {
+      e.preventDefault();
+      showContextMenu(e, e.target.src);
+    }
+  });
 
-// 背景轮换功能
-document.addEventListener('DOMContentLoaded', () => {
-  // 收集首页图片作为背景源
-  const backgroundImages = Array.from(
-    document.querySelectorAll('#home-page .image-container img')
-  ).map(img => img.src);
-
-  // 预加载图片
-  function preloadImages(urls) {
-    urls.forEach(url => new Image().src = url);
-  }
-  preloadImages(backgroundImages);
-
-  // 初始化轮换逻辑
-  let currentImageIndex = 0;
-  const layers = document.querySelectorAll('.bg-layer');
-  let activeLayerIndex = 0;
-
-  function changeBackground() {
-    const nextImageIndex = (currentImageIndex + 1) % backgroundImages.length;
-    const inactiveLayerIndex = activeLayerIndex === 0 ? 1 : 0;
-
-    layers[inactiveLayerIndex].style.backgroundImage = `url('${backgroundImages[nextImageIndex]}')`;
-    layers[activeLayerIndex].classList.remove('active');
-    layers[inactiveLayerIndex].classList.add('active');
+  function showContextMenu(e, imgSrc) {
+    if(contextMenu) contextMenu.remove();
     
-    activeLayerIndex = inactiveLayerIndex;
-    currentImageIndex = nextImageIndex;
-  }
-
-  // 初始化背景
-  if (backgroundImages.length > 0) {
-    layers[0].style.backgroundImage = `url('${backgroundImages[0]}')`;
-    layers[0].classList.add('active');
-    setInterval(changeBackground, 2000); // 2秒切换一次
-  }
-});
-
-document.addEventListener('click', function(event) {
-  const starButton = event.target.closest('.favorite-star');
-  if (starButton) {
-    // 添加边界检查
-    const imageContainer = starButton.closest('.image-container');
-    if (!imageContainer) return;
+    contextMenu = document.createElement('div');
+    contextMenu.className = 'context-menu';
+    contextMenu.style.left = `${e.pageX}px`;
+    contextMenu.style.top = `${e.pageY}px`;
     
-    const imgElement = imageContainer.querySelector('img');
-    if (!imgElement) return;
+    const menuItem = document.createElement('div');
+    menuItem.className = 'context-menu-item';
+    menuItem.textContent = favorites.includes(imgSrc) ? '取消收藏' : '收藏图片';
+    menuItem.onclick = () => toggleFavorite(imgSrc);
+    
+    contextMenu.appendChild(menuItem);
+    document.body.appendChild(contextMenu);
+  }
 
-    const imageUrl = imgElement.src;
-    const currentIndex = favorites.indexOf(imageUrl);
+  document.getElementById('prevPage').addEventListener('click', () => {
+    if (currentPage > 1) {
+      loadHistory(currentPage - 1);
+    }
+  });
+  
+  document.getElementById('nextPage').addEventListener('click', () => {
+    loadHistory(currentPage + 1);
+  });
 
-    // 更新收藏状态
-    if (currentIndex === -1) {
-      favorites.push(imageUrl);
-      starButton.classList.add('active');
+  function toggleFavorite(imgSrc) {
+    const index = favorites.indexOf(imgSrc);
+    if(index === -1) {
+      favorites.push(imgSrc);
     } else {
-      favorites.splice(currentIndex, 1);
-      starButton.classList.remove('active');
+      favorites.splice(index, 1);
     }
-    
-    // 强制更新本地存储
     localStorage.setItem('favorites', JSON.stringify(favorites));
-    
-    // 立即更新收藏页面
-    if (document.getElementById('favorites-page').classList.contains('active')) {
-      loadFavorites(true); // 添加强制刷新参数
+    if(document.getElementById('favorites-page').classList.contains('active')) {
+      loadFavorites();
     }
-    return;
   }
 
-  // 修改页面切换处理
-  const navLink = event.target.closest('a[data-page]');
-  if (navLink) {
-    event.preventDefault();
-    const pageId = navLink.dataset.page;
-    showPage(pageId);
-    // 添加页面切换后的强制重绘
-    setTimeout(() => {
-      if(pageId === 'favorites') loadFavorites(true);
-    }, 50);
-  }
-});
-
-  // 增强的加载收藏方法
-  function loadFavorites(forceUpdate = false) {
-  const favoritesGallery = document.getElementById('favorites-gallery');
-  // 检查数据有效性
-  const validFavorites = favorites.filter(url => 
-    url && url.startsWith('http') && 
-    !url.includes('undefined') && 
-    !url.includes('null')
-  );
-  
-  // 数据过滤
-  if (JSON.stringify(validFavorites) !== JSON.stringify(favorites)) {
-    favorites = validFavorites;
-    localStorage.setItem('favorites', JSON.stringify(favorites));
+  function loadFavorites() {
+    const container = document.getElementById('favorites-gallery');
+    container.innerHTML = favorites.map(url => `
+      <img src="${url}" alt="收藏的图片">
+    `).join('');
   }
 
-  // DOM对比更新
-  const currentUrls = [...favoritesGallery.querySelectorAll('img')].map(img => img.src);
-  if (!forceUpdate && JSON.stringify(currentUrls) === JSON.stringify(favorites)) return;
-
-  // 重新生成收藏内容
-  favoritesGallery.innerHTML = favorites.map(url => `
-    <div class="image-container">
-      <img src="${url}" alt="收藏图片" onerror="this.remove()">
-      <button class="favorite-star active"></button>
-    </div>
-  `).join('');
-
-  // 添加图片加载失败处理
-  favoritesGallery.querySelectorAll('img').forEach(img => {
-    img.onerror = function() {
-      const index = favorites.indexOf(img.src);
-      if (index > -1) {
-        favorites.splice(index, 1);
-        localStorage.setItem('favorites', JSON.stringify(favorites));
-        img.parentElement.remove();
-      }
-    }
-  });
-};
-
-  // 增强的初始化方法
-window.addEventListener('DOMContentLoaded', () => {
-  // 清理无效收藏
-  favorites = favorites.filter(url => 
-    url && url.startsWith('http') && 
-    !url.includes('undefined') && 
-    !url.includes('null')
-  );
-  
-  // 初始化按钮状态
-  document.querySelectorAll('.image-container').forEach(container => {
-    const img = container.querySelector('img');
-    const star = container.querySelector('.favorite-star');
-    if (img && star) {
-      star.classList.toggle('active', favorites.includes(img.src));
-      // 添加图片加载失败处理
-      img.onerror = function() {
-        container.remove();
-      }
-    }
-  });
-
-  // 初始化收藏页面
-  if (document.getElementById('favorites-page').classList.contains('active')) {
-    loadFavorites(true);
-  }
-});
-
-
-// 历史记录功能
-let history = JSON.parse(localStorage.getItem('history') || '[]');
-function loadHistory() {
-  const container = document.getElementById('history-gallery');
-  container.innerHTML = history.map(url => `
-    <div class="image-container">
-      <img src="${url}" alt="历史图片">
-    </div>
-  `).join('');
-}
-
-// 窗口初始化
-window.onload = function () {
-  chrome.windows.getCurrent(function (win) {
-    chrome.windows.update(win.id, {
-      width: screen.availWidth,
-      height: screen.availHeight
+ 
+  // 初始化页面
+  window.onload = function () {
+    chrome.windows.getCurrent(function (win) {
+      chrome.windows.update(win.id, {
+        width: screen.availWidth,
+        height: screen.availHeight
+      });
     });
-  });
-};
+  };
 
-// 预设替换功能
-const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg";
+  // 预设替换功能
+  const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg";
+
