@@ -166,6 +166,7 @@ document.getElementById('replaceAll').addEventListener('click', async () => {
     button.disabled = false;
   }
 });
+
 document.getElementById('generateAIImage').addEventListener('click', async () => {
   const prompt = document.getElementById('aiPrompt').value.trim();
   if (!prompt) {
@@ -373,3 +374,4 @@ document.addEventListener('click', async function (e) {
 
   // 预设替换功能
   const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg";
+
