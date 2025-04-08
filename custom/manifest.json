@@ -5,6 +5,7 @@
   "description": "为你的网页添加个性化背景图片，并保存设置",
   "permissions": [
   "activeTab",
+  "scripting",
   "storage",
   "https://api.siliconflow.cn/"
 ],

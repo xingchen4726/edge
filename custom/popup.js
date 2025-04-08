@@ -100,8 +100,35 @@ const LOCAL_IMAGE_URLS = [
   "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foxlofvhqoj31hc0u0qhu.jpg"
 ];
 
-// 初始化图片点击事件
-document.addEventListener('DOMContentLoaded', setupImageClickHandlers);
+// 页面切换功能
+function showPage(pageId) {
+  // 隐藏所有页面
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  
+  // 显示目标页面
+  const targetPage = document.getElementById(`${pageId}-page`);
+  if (targetPage) {
+    targetPage.classList.add('active');
+  }
+}
+
+// 初始化图片点击事件和导航
+document.addEventListener('DOMContentLoaded', () => {
+  setupImageClickHandlers();
+  
+  // 修改导航方式，阻止a标签默认行为
+  document.querySelectorAll('nav a').forEach(link => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const pageId = link.getAttribute('data-page');
+      if (pageId) {
+        showPage(pageId);
+      }
+    });
+  });
+});
 
 // 一键替换所有图片功能
 document.getElementById('replaceAll').addEventListener('click', async () => {
