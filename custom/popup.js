@@ -199,3 +199,113 @@ document.getElementById('generateAIImage').addEventListener('click', async () =>
     button.disabled = false;
   }
 });
+document.addEventListener('click', async function (e) {
+  if (e.target.tagName === 'IMG') {
+    const src = e.target.src;
+
+    try {
+      await fetch('http://localhost:8080/api/history', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ src })
+      });
+    } catch (error) {
+      console.error('Error adding history:', error);
+    }
+  }
+
+  if(contextMenu) {
+    contextMenu.remove();
+    contextMenu = null;
+  }
+});
+ // 历史记录功能
+ let history = JSON.parse(localStorage.getItem('history') || '[]');
+ async function loadHistory() {
+   try {
+     const response = await fetch('http://localhost:8080/api/history?page=1&size=20');
+     const history = await response.json();
+
+     const container = document.getElementById('history-gallery');
+     container.innerHTML = history.map(item => `
+       <img src="${item.src}" alt="历史图片">
+     `).join('');
+   } catch (error) {
+     console.error('Error loading history:', error);
+   }
+ }
+ // 页面切换功能
+  function showPage(pageId) {
+    document.querySelectorAll('.page').forEach(page => {
+      page.classList.remove('active');
+    });
+    document.getElementById(`${pageId}-page`).classList.add('active');
+    
+    if(pageId === 'favorites') loadFavorites();
+    if(pageId === 'history') loadHistory();
+  }
+
+  // 收藏功能
+  let favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+  let contextMenu = null;
+
+  // 右键菜单
+  document.addEventListener('contextmenu', e => {
+    if(e.target.tagName === 'IMG') {
+      e.preventDefault();
+      showContextMenu(e, e.target.src);
+    }
+  });
+
+  function showContextMenu(e, imgSrc) {
+    if(contextMenu) contextMenu.remove();
+    
+    contextMenu = document.createElement('div');
+    contextMenu.className = 'context-menu';
+    contextMenu.style.left = `${e.pageX}px`;
+    contextMenu.style.top = `${e.pageY}px`;
+    
+    const menuItem = document.createElement('div');
+    menuItem.className = 'context-menu-item';
+    menuItem.textContent = favorites.includes(imgSrc) ? '取消收藏' : '收藏图片';
+    menuItem.onclick = () => toggleFavorite(imgSrc);
+    
+    contextMenu.appendChild(menuItem);
+    document.body.appendChild(contextMenu);
+  }
+
+
+
+  function toggleFavorite(imgSrc) {
+    const index = favorites.indexOf(imgSrc);
+    if(index === -1) {
+      favorites.push(imgSrc);
+    } else {
+      favorites.splice(index, 1);
+    }
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    if(document.getElementById('favorites-page').classList.contains('active')) {
+      loadFavorites();
+    }
+  }
+
+  function loadFavorites() {
+    const container = document.getElementById('favorites-gallery');
+    container.innerHTML = favorites.map(url => `
+      <img src="${url}" alt="收藏的图片">
+    `).join('');
+  }
+
+ 
+  // 初始化页面
+  window.onload = function () {
+    chrome.windows.getCurrent(function (win) {
+      chrome.windows.update(win.id, {
+        width: screen.availWidth,
+        height: screen.availHeight
+      });
+    });
+  };
+
+  // 预设替换功能
+  const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg";
