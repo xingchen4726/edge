@@ -1,3 +1,4 @@
+
 let currentPage = 1; // 当前页码
 const pageSize = 9; // 每页显示的图片数量
 // 背景更换功能
@@ -373,3 +374,4 @@ document.addEventListener('click', async function (e) {
 
   // 预设替换功能
   const PRESET_REPLACE_URL = "https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/9bd9b167gy1g4lhdxdmbuj21hc0xcakc.jpg";
+
