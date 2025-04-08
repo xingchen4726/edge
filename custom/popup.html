@@ -2,33 +2,399 @@
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>自定义背景图片</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>自定义桌面 - 个性化壁纸管理</title>
   <style>
+    :root {
+      --primary: #FF3B8B;
+      --secondary: #FFD700;
+      --background: #FFF5FB;
+      --text: #4A4A4A;
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
     body {
-      width: 200px;
-      padding: 10px;
-      font-family: Arial, sans-serif;
+      font-family: 'Microsoft YaHei', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--background);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+
     }
-    input {
-      width: 100%;
-      padding: 5px;
+
+    .header {
+      background: var(--card-bg);
+      padding: 12px 5%;
+      width: 90%;
+      position: fixed;
+      top: 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      border-radius: 0 0 12px 12px;
     }
-    button {
+
+    .header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header h1 i {
+      font-style: normal;
+      animation: heartbeat 1.2s infinite;
+    }
+
+    .header nav {
+      display: flex;
+      gap: 15px;
+    }
+
+    .header nav a {
+      text-decoration: none;
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: linear-gradient(145deg, #fff0f5, #ffe5ed);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: 1px solid rgba(255,59,139,0.1);
+    }
+
+    .header nav a:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+      background: linear-gradient(145deg, #ffe5ed, #fff0f5);
+    }
+
+    #ai-page .controls {
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 30px;
+}
+
+.ai-control-group {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* 按钮通用样式增强 */
+#ai-page button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  padding: 14px 24px;
+}
+
+/* 按钮悬浮效果 */
+#ai-page button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(255,59,139,0.3);
+}
+
+/* 按钮点击效果 */
+#ai-page button:active {
+  transform: translateY(1px);
+}
+
+/* 各按钮个性样式 */
+#changeBg {
+  background: linear-gradient(135deg, #FF3B8B 0%, #FF6B6B 100%);
+  color: white;
+}
+
+#generateAIImage {
+  background: linear-gradient(135deg, #6B66FF 0%, #8B65FF 100%);
+  color: white;
+}
+
+#replaceAll {
+  background: linear-gradient(135deg, #FFD700 0%, #FFAA00 100%);
+  color: var(--text);
+}
+
+.more-button {
+  background: linear-gradient(135deg, #00C9A7 0%, #00D4B1 100%);
+  color: white;
+}
+
+/* 按钮图标 */
+.button-icon {
+  width: 20px;
+  height: 20px;
+  filter: brightness(0) invert(1);
+}
+
+#replaceAll .button-icon {
+  filter: none;
+}
+
+/* 流光动画效果 */
+button::after {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 25%,
+    rgba(255,255,255,0.2) 50%,
+    transparent 75%
+  );
+  animation: flow 3s infinite linear;
+  opacity: 0.6;
+}
+
+@keyframes flow {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+  #ai-page .controls {
+    padding: 20px;
+  }
+  
+  #ai-page button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+    .page {
+      display: none;
+      width: 90%;
+      margin-top: 100px;
+    }
+    .page.active {
+      display: block;
+    }
+
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      padding: 20px;
       width: 100%;
-      padding: 5px;
-      margin-top: 10px;
-      background-color: #0078d4;
-      color: white;
-      border: none;
+
+      margin-bottom: 40px;
+    }
+
+    .gallery img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      border-radius: 10px;
       cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid transparent;
+    }
+
+    .gallery img:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--shadow);
+      border-color: var(--primary);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 15px;
+      width: 100%;
+      padding: 20px;
+      margin-bottom: 40px;
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    #bgUrl {
+      padding: 12px;
+      border: 1px solid rgba(255,59,139,0.2);
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    #bgUrl:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(255,59,139,0.2);
+    }
+
+    #changeBg,
+    .more-button {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+    }
+
+    #changeBg {
+      background: var(--primary);
+      color: white;
+    }
+
+    #changeBg:hover {
+      background: #FF1F6D;
+      transform: translateY(-2px);
+    }
+
+    .more-button {
+      background: var(--secondary);
+      color: var(--text);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .more-button:hover {
+      background: #FFC300;
+      transform: translateY(-2px);
+    }
+
+    .context-menu {
+      position: absolute;
+      background: var(--card-bg);
+      box-shadow: var(--shadow);
+      border-radius: 8px;
+      padding: 8px 0;
+      z-index: 1001;
+    }
+    .context-menu-item {
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .context-menu-item:hover {
+      background: rgba(255,59,139,0.1);
+    }
+
+    @media (max-width: 768px) {
+      .header {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px 5%;
+      }
+
+      .header nav {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .gallery img {
+        height: 150px;
+      }
+    }
+
+    @keyframes heartbeat {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
     }
   </style>
 </head>
 <body>
-  <h3>背景图片</h3>
-  <input type="text" id="bgUrl" placeholder="输入背景图片URL">
-  <button id="changeBg">更换背景</button>
+<div class="header">
+  <h1>自定义<i>💖</i>桌面</h1>
+  <nav>
+    <a href="#" data-page="home">首页</a>
+    <a href="#" data-page="favorites">收藏</a>
+    <a href="#" data-page="ai">AI</a>
+    <a href="#" data-page="history">历史</a>
+  </nav>
+</div>
 
-  <script src="popup.js"></script>
+<!-- 首页 -->
+<div id="home-page" class="page active">
+  <div class="gallery">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/005FzdTdgy1gegf7md2yyj31hc0u0e6v.jpg" alt="Image 1">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqi5vxrij31630rsu0x.jpg" alt="Image 2">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqmpz6zpj312z0svu0x.jpg" alt="Image 3">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqnrlkfxj31110q77sr.jpg" alt="Image 4">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo0e8fzj31hc0xcqv5.jpg" alt="Image 5">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqo9z8j0j31kw11ee81.jpg" alt="Image 6">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqoy2b7hj31040p7npd.jpg" alt="Image 7">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1fodqp7hu7tj31kw0ydx6r.jpg" alt="Image 8">
+    <img src="https://image.baidu.com/search/down?url=https://tvax3.sinaimg.cn/large/0072Vf1pgy1foenqvqwvqj31hc0xc7aj.jpg" alt="Image 9">
+  </div>
+</div>
+
+<!-- 收藏页面 -->
+<div id="favorites-page" class="page">
+  <div class="gallery" id="favorites-gallery"></div>
+</div>
+
+<!-- AI功能页面 -->
+<!-- 修改AI页面部分 -->
+<div id="ai-page" class="page">
+  <div class="controls">
+    <div class="ai-control-group">
+      <input type="text" id="bgUrl" placeholder="🌐 输入背景图片URL">
+      <button id="changeBg">
+        <img src="https://img.icons8.com/ios/50/ffffff/refresh--v1.png" class="button-icon" alt="更换">
+        更换背景
+      </button>
+    </div>
+
+    <div class="ai-control-group">
+      <input type="text" id="aiPrompt" placeholder="🎨 输入AI绘图描述">
+      <button id="generateAIImage">
+        <img src="https://img.icons8.com/ios/50/ffffff/artificial-intelligence.png" class="button-icon" alt="AI">
+        生成AI背景
+      </button>
+    </div>
+
+    <div class="ai-control-group">
+      <button id="replaceAll">
+        <img src="https://img.icons8.com/ios/50/4a4a4a/replace.png" class="button-icon" alt="替换">
+        一键替换所有图片
+      </button>
+      <a href="#" class="more-button">
+        <img src="https://img.icons8.com/ios/50/ffffff/download-from-cloud.png" class="button-icon" alt="更多">
+        更多超清壁纸
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- 历史页面 -->
+<div id="history-page" class="page">
+  <div class="gallery" id="history-gallery"></div>
+  <div class="pagination">
+    <button id="prevPage">上一页</button>
+    <button id="nextPage">下一页</button>
+  </div>
+</div>
+
+
+<script src="popup.js"></script>
 </body>
 </html>
