@@ -111,25 +111,33 @@
     }
 
     .favorite-star {
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      width: 24px;
-      height: 24px;
-      cursor: pointer;
-      background: none;
-      border: none;
-      z-index: 3;
-      pointer-events: auto;
-    }
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  z-index: 10;
+  font-size: 24px;
+  color: white;
+  text-shadow: 0 0 3px rgba(0,0,0,0.5);
+  transition: all 0.3s ease;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.favorite-star.active {
+  color: #FFD700;
+  text-shadow: 0 0 8px rgba(255,215,0,0.8);
+}
+.image-container {
+  position: relative;
+}
 
-    .favorite-star::before {
-      content: "★";
-      font-size: 24px;
-      color: white;
-      text-shadow: 0 0 3px rgba(0,0,0,0.5);
-      transition: all 0.3s ease;
-    }
 
     .favorite-star.active::before {
       color: #FFD700;
@@ -216,7 +224,33 @@
       animation: flow 3s infinite linear;
       opacity: 0.6;
     }
+/* 添加在现有CSS中 */
+#background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.8; /* 80%不透明度 */
+}
 
+.bg-layer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  transition: opacity 2s ease-in-out;
+}
+
+.bg-layer.active {
+  opacity: 1;
+}
     @keyframes flow {
       0% { transform: translate(-50%, -50%) rotate(0deg); }
       100% { transform: translate(-50%, -50%) rotate(360deg); }
@@ -375,6 +409,7 @@
 <body>
 
   <div id="background-container">
+    <div class="bg-layer"></div>
     <div class="bg-layer"></div>
     <div class="bg-layer"></div>
   </div>
