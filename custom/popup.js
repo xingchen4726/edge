@@ -1,3 +1,4 @@
+
 let currentPage = 1; // 当前页码
 const pageSize = 9; // 每页显示的图片数量
 let contextMenu = null; // 右键菜单
@@ -468,3 +469,4 @@ document.addEventListener('DOMContentLoaded', () => {
   // ...其他初始化代码...
   initBackgroundRotation();
 });
+
